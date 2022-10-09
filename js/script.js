@@ -4,7 +4,7 @@
 новый фильм добавляется в список. Страница не должна перезагружаться.
 Новый фильм должен добавляться в movieDB.movies.
 Для получения доступа к значению input - обращаемся к нему как input.value;
-P.S. Здесь есть несколько вариантов решения задачи, принимается любой, но рабочий
+P.S. Здесь есть несколько вариантов решения задачи, принимается любой, но рабочий+
 
 2) Если название фильма больше, чем 21 символ - обрезать его и добавить три точки
 
@@ -36,16 +36,27 @@ document.addEventListener("DOMContentLoaded", () => {
     movieList = document.querySelector(".promo__interactive-list"),
     addForm = document.querySelector(".add"),
     addInput = addForm.querySelector(".adding__input"),
-    chekbox = addForm.querySelector(".checkbox");
+    checkbox = addForm.querySelector("[type='checkbox']");
 
   addForm.addEventListener("submit", (evet) => {
     evet.preventDefault();
 
-    const newFilm = addInput.value;
-    // const favorite = chekbox.checked;
-    movieDB.movies.push(newFilm);
-    sortArr(movieDB.movies);
-    createMovieList(movieDB.movies, movieList);
+    let newFilm = addInput.value;
+    const chek = checkbox.checked;
+
+    if (newFilm) {
+      if (newFilm.length > 21) {
+        newFilm = `${newFilm.substring(0, 22)}...`;
+      }
+
+      if (chek) {
+        console.log("Добавляем любимый фильм");
+      }
+
+      movieDB.movies.push(newFilm);
+      sortArr(movieDB.movies);
+      createMovieList(movieDB.movies, movieList);
+    }
 
     evet.target.reset();
   });
@@ -67,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createMovieList(films, parent) {
     parent.innerHTML = "";
+    sortArr(films);
 
     films.forEach((film, i) => {
       movieList.innerHTML += `
@@ -75,9 +87,17 @@ document.addEventListener("DOMContentLoaded", () => {
                         </li>
     `;
     });
+
+    document.querySelectorAll(".delete").forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        btn.parentElement.remove();
+        movieDB.movies.splice(i, 1);
+
+        createMovieList(films, parent);
+      });
+    });
   }
   deleteReclam(reclama);
   makeChanges();
-  sortArr(movieDB.movies);
   createMovieList(movieDB.movies, movieList);
 });
